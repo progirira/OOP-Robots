@@ -29,12 +29,16 @@ public class MainApplicationFrame extends JFrame {
 
         addWindow(createLogWindow());
 
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400, 400);
-        addWindow(gameWindow);
+        addWindow(createGameWindow());
 
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    protected GameWindow createGameWindow() {
+        GameWindow gameWindow = new GameWindow();
+        gameWindow.setSize(400, 400);
+        return gameWindow;
     }
 
     protected LogWindow createLogWindow() {
@@ -80,24 +84,24 @@ public class MainApplicationFrame extends JFrame {
 // 
 //        return menuBar;
 //    }
-    private JMenuItem generateMenuItem(String text, ActionListener listener){
+    private JMenuItem generateMenuItem(String text, int key, ActionListener listener){
 
-        JMenuItem menuItem = new JMenuItem(text, KeyEvent.VK_S);
+        JMenuItem menuItem = new JMenuItem(text, key);
         menuItem.addActionListener(listener);
         return menuItem;
     }
 
     private JMenu generateLookAndFeelMenu() {
         JMenu lookAndFeelMenu = new JMenu("Режим отображения");
-        lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
+        lookAndFeelMenu.setMnemonic(KeyEvent.VK_Q);
         lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
                 "Управление режимом отображения приложения");
 
-        lookAndFeelMenu.add(generateMenuItem("Системная схема", (event) -> {
+        lookAndFeelMenu.add(generateMenuItem("Системная схема", KeyEvent.VK_W, (event) -> {
             setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             this.invalidate();
         }));
-        lookAndFeelMenu.add(generateMenuItem("Универсальная схема", (event) -> {
+        lookAndFeelMenu.add(generateMenuItem("Универсальная схема", KeyEvent.VK_E, (event) -> {
             setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             this.invalidate();
         }));
@@ -108,11 +112,11 @@ public class MainApplicationFrame extends JFrame {
 
     private JMenu generateTestBar() {
         JMenu testMenu = new JMenu("Тесты");
-        testMenu.setMnemonic(KeyEvent.VK_T);
+        testMenu.setMnemonic(KeyEvent.VK_R);
         testMenu.getAccessibleContext().setAccessibleDescription(
                 "Тестовые команды");
 
-        testMenu.add(generateMenuItem("Сообщение в лог", (event) -> {
+        testMenu.add(generateMenuItem("Сообщение в лог", KeyEvent.VK_T, (event) -> {
             Logger.debug("Новая строка");
         }));
 
@@ -121,10 +125,10 @@ public class MainApplicationFrame extends JFrame {
 
     private JMenu generateActionsBar() {
         JMenu actionsMenu = new JMenu("Действия");
-        actionsMenu.setMnemonic(KeyEvent.VK_V);
+        actionsMenu.setMnemonic(KeyEvent.VK_Y);
         actionsMenu.getAccessibleContext().setAccessibleDescription("Действия над приложением");
 
-        actionsMenu.add(generateMenuItem("Закрыть", (event) -> {
+        actionsMenu.add(generateMenuItem("Закрыть", KeyEvent.VK_U, (event) -> {
             if (ConfirmWindow.confirmExit(actionsMenu) == JOptionPane.YES_OPTION) {
                 System.exit(0);
             }
