@@ -39,8 +39,8 @@ public class GameLogic {
 
     protected void setTargetPosition(Point p)
     {
-        gameData.m_targetPositionX = p.x;
-        gameData.m_targetPositionY = p.y;
+        gameData.m_targetPosition.setX(p.x);
+        gameData.m_targetPosition.setY(p.y);
         if (!ifGameStarted){
             ifGameStarted = true;
         m_timer.schedule(new TimerTask()
@@ -50,25 +50,26 @@ public class GameLogic {
             {
                 notifyObservers();
             }
-        }, 0, 1000);
+        }, 0, 100);
         }
     }
 
     protected Point getTargetPosition()
     {
-        return new Point(gameData.m_targetPositionX, gameData.m_targetPositionY);
+        return new Point((int)gameData.m_targetPosition.getX(), (int)gameData.m_targetPosition.getY());
     }
     protected Point getRobotPosition()
     {
-        return new Point((int) gameData.m_robotPositionX, (int) gameData.m_robotPositionY);
+        return new Point((int) gameData.m_robotPosition.getX(), (int) gameData.m_robotPosition.getY());
     }
 
     protected double getRobotDirection()
     {
-        return gameData.m_robotDirection;
+        return gameData.m_robotPosition.getDirection();
     }
     private static double distance(double x1, double y1, double x2, double y2)
     {
+
         double diffX = x1 - x2;
         double diffY = y1 - y2;
         return Math.sqrt(diffX * diffX + diffY * diffY);
@@ -96,18 +97,18 @@ public class GameLogic {
     protected void onModelUpdateEvent()
     {
 
-        double distance = distance(gameData.m_targetPositionX, gameData.m_targetPositionY,
-                gameData.m_robotPositionX, gameData.m_robotPositionY);
+        double distance = distance(gameData.m_targetPosition.getX(), gameData.m_targetPosition.getY(),
+                gameData.m_robotPosition.getX(), gameData.m_robotPosition.getY());
         if (distance < 0.5)
             return;
 
         double velocity = gameData.maxVelocity;
-        double angleToTarget = angleTo(gameData.m_robotPositionX, gameData.m_robotPositionY, gameData.m_targetPositionX, gameData.m_targetPositionY);
+        double angleToTarget = angleTo(gameData.m_robotPosition.getX(), gameData.m_robotPosition.getY(), gameData.m_targetPosition.getX(), gameData.m_targetPosition.getY());
         double angularVelocity = 0;
-        if (angleToTarget > gameData.m_robotDirection)
+        if (angleToTarget > gameData.m_robotPosition.getDirection())
             angularVelocity = gameData.maxAngularVelocity;
 
-        if (angleToTarget < gameData.m_robotDirection)
+        if (angleToTarget < gameData.m_robotPosition.getDirection())
             angularVelocity = -gameData.maxAngularVelocity;
 
 
@@ -117,7 +118,7 @@ public class GameLogic {
 
     private void notifyObservers(){
         for (WindowWithPathState window : this.observers) {
-            Point p = new Point((int) gameData.m_robotPositionX, (int) gameData.m_robotPositionY);
+            Point p = new Point((int) gameData.m_robotPosition.getX(), (int) gameData.m_robotPosition.getY());
             window.update(p);
         }
     }
@@ -133,22 +134,22 @@ public class GameLogic {
     {
         velocity = applyLimits(velocity, 0, gameData.maxVelocity);
         angularVelocity = applyLimits(angularVelocity, -gameData.maxAngularVelocity, gameData.maxAngularVelocity);
-        double newX = gameData.m_robotPositionX + velocity / angularVelocity *
-                (Math.sin(gameData.m_robotDirection  + angularVelocity * duration) -
-                        Math.sin(gameData.m_robotDirection));
+        double newX = gameData.m_robotPosition.getX() + velocity / angularVelocity *
+                (Math.sin(gameData.m_robotPosition.getDirection()  + angularVelocity * duration) -
+                        Math.sin(gameData.m_robotPosition.getDirection()));
         if (!Double.isFinite(newX))
-            newX = gameData.m_robotPositionX + velocity * duration * Math.cos(gameData.m_robotDirection);
+            newX = gameData.m_robotPosition.getX() + velocity * duration * Math.cos(gameData.m_robotPosition.getDirection());
 
-        double newY = gameData.m_robotPositionY - velocity / angularVelocity *
-                (Math.cos(gameData.m_robotDirection + angularVelocity * duration) -
-                        Math.cos(gameData.m_robotDirection));
+        double newY = gameData.m_robotPosition.getY() - velocity / angularVelocity *
+                (Math.cos(gameData.m_robotPosition.getDirection() + angularVelocity * duration) -
+                        Math.cos(gameData.m_robotPosition.getDirection()));
         if (!Double.isFinite(newY))
-            newY = gameData.m_robotPositionY + velocity * duration * Math.sin(gameData.m_robotDirection);
+            newY = gameData.m_robotPosition.getY() + velocity * duration * Math.sin(gameData.m_robotPosition.getDirection());
 
-        gameData.m_robotPositionX = newX;
-        gameData.m_robotPositionY = newY;
-        double newDirection = asNormalizedRadians(gameData.m_robotDirection + angularVelocity * duration);
-        gameData.m_robotDirection = newDirection;
+        gameData.m_robotPosition.setX(newX);
+        gameData.m_robotPosition.setY(newY);
+        double newDirection = asNormalizedRadians(gameData.m_robotPosition.getDirection() + angularVelocity * duration);
+        gameData.m_robotPosition.setDirection(newDirection);
     }
 
     public void addObserver(WindowWithPathState window) {
