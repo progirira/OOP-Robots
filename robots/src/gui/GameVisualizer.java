@@ -47,7 +47,7 @@ public class GameVisualizer extends JPanel
             public void mouseClicked(MouseEvent e)
             {
                 Point point = e.getPoint();
-                double resolution = Toolkit.getDefaultToolkit().getScreenResolution() / 140.0;
+                double resolution = Toolkit.getDefaultToolkit().getScreenResolution() / 150.0;
                 point.x = (int) (point.x / resolution);
                 point.y = (int) (point.y / resolution);
                 gameLogic.setTargetPosition(point);
