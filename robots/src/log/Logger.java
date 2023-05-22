@@ -2,7 +2,7 @@ package log;
 
 public final class Logger
 {
-    private static final LogWindowSource defaultLogSource;
+    private static LogWindowSource defaultLogSource;
     static {
         defaultLogSource = new LogWindowSource(100);
     }
